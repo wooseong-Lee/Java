@@ -60,7 +60,7 @@ public class BeepTask implements Runnable {
                 Thread.sleep(500);
             } catch (Exception e) {}
         }
-    }d
+    }
 }
 
 public class BeepPrintExample2 {
