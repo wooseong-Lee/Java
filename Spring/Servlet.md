@@ -61,7 +61,7 @@ JSP를 Servlet 클래스로 변환하는 역할을 Servlet Container의 JSP 엔�
 5. 컴파일 된 후 Servlet 클래스의 service() 메소드를 호출하고 요청을 처리한다.
 변환된 Servlet 파일(.java)엔 JSP에서 작성된 자바 코드가 service() 메소드 안에 존재하기 때문에 자바로 생성된 로직을 수행할 수 있다.
 <h2>Servlet Container</h2>
-서블릿 컨테이너는 개발자가 웹 서버와 통신하기 위해서 소켓을 생성하고(socket()), 특정 포트에 리스팅하고(bind(), listen()), 스트림을 생성하는 등 복잡한 일들을 할 필요가 없게해준다. **컨테이너는 Servlet 생성부터 소멸까지의 일련의 과정(Life Cycle)을 관리한다. 서블릿 컨테이너는 요청이 들어올 때마다 새로운 자바 스레드를 만든다.** 우리가 알고있는 대표적인 Servlet Container가 Tomcat이다. 톰캣같은 WAS가 java를 컴파일해서 class파일로 만들고 이를 메모리에 올려 Servlet 객체를 만든다.
+서블릿 컨테이너는 개발자가 웹 서버와 통신하기 위해서 소켓을 생성하고(socket()), 특정 포트에 리스팅하고(bind(), listen()), 스트림을 생성하는 등 복잡한 일들을 할 필요가 없게해준다.  <strong>컨테이너는 Servlet 생성부터 소멸까지의 일련의 과정(Life Cycle)을 관리한다. 서블릿 컨테이너는 요청이 들어올 때마다 새로운 자바 스레드를 만든다.</strong> 우리가 알고있는 대표적인 Servlet Container가 Tomcat이다. 톰캣같은 WAS가 java를 컴파일해서 class파일로 만들고 이를 메모리에 올려 Servlet 객체를 만든다.
 
 
 
