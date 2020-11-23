@@ -68,7 +68,12 @@ JSP를 Servlet 클래스로 변환하는 역할을 Servlet Container의 JSP 엔�
 
 <h2>DispatcherServlet</h2>
 
-DispatcherServlet은 모든 요청을 받음. 또한 특정 URL 패턴의 요청만 받도록 제한할 수 있다.
+![DispatcherServlet](images/DispatcherServlet2.png)
+
+DispatcherServlet 내부에 ServletWebApplicationContext와 RootWebApplicationContext가 동작하는 것으로 보이지만 이 두 ApplicationContext가 바로 process 그림에서 보셨던 스프링 컨테이너(Spring container)에서 동작하는 컨텍스트라고 이해하면 된다.
+
+- 서블릿 컨테이너: 서블릿의 생명 주기 관리
+- 스프링 컨테이너: Java object인 Bean의 라이프 사이클을 관리하여 Spring framework의 특징인 IoC, DI를 제공해주는 역할을한다.
 
 <h3>스프링 부트 실행 과정</h3>
 Spring boot는 ServletContainterInitializer를 구현한 TomcatStarter의 onStartup 메소드를 먼저 실행한다. 톰캣을 실행하고 다음 조건이 만족하면 DispatcherServlet이 등록된다. DispatcherServletAutoConfiguration.class에 구성되어 있는 DispatcherServlet이 빈 등록으로 자동 등록된다.
