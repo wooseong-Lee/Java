@@ -216,7 +216,8 @@ public abstract class Pizza {
 
         abstract Pizza build();
 
-        //Subclasses must override this method to return "this" protected abstract T self();
+        //Subclasses must override this method to return "this"
+        protected abstract T self();
     }
 
     Pizza(Builder<?> builder) {
