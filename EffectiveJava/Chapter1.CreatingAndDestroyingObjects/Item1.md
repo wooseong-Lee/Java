@@ -12,6 +12,8 @@ public static Boolean valueOf(boolean b) {
 
 <h3>Advantages of static factory method</h3>
 
+---------------------------------------------
+
 <h4>1. 이름이 있다.</h4>
 
 - 사용하는 코드에서 용도를 확인하기 쉽다.
@@ -78,3 +80,163 @@ public class Collections {
 - 이 두개의 구현체는 클라이언트는 알 수 없으며, 추후에 라이브러리에서 변경이 일어나더라도 클라이언트 사이드에서는 고칠게 없다.
 - 또한 RegularEnumSet / JumboEnumSet 이외에 추가적으로 더 반환하더다도 클라이언트는 신경쓰지 않아도 된다.
 
+<h4>리턴되는 객체의 클래스는 해당 팩토리 메소드를 포함하는 클래스가 작성되는 시점에 존재하지 않아도 된다.</h4>
+<br/>
+
+<strong>이는 Java Databse Connectivity API(JDBC)의 근간이되는 Service Provider Framework의 핵심이다.</strong>
+
+<br/>
+<br/>
+
+<h5>Service Provider Framework Pattern의 구성 요소</h5>
+
+1. Service Interface: Service 사용자에게 제공하기 위해 표준으로 정한 API가 정의된 Interface
+~~~
+interface Connection {...} // JDBC에서의 Service Interface
+~~~
+
+2. Service Registration API: Provider Interface의 구현체를 등록하는 API
+~~~
+DriverManager.registerDriver(); // Provider Register API
+
+/**
+* registerDriver() 메소드는 Driver가 로드되는 static 시점에 호출된다. 따라서 * getConnection이 호출되기전 미리 등록된 제공자가 있다고 확신하고 그에 맞는 
+* Connection 서비스 구현체를 반환하도록 약속되어 있다.
+*/
+~~~
+
+3. Service Access API: Service Interface의 구현체를 얻어오는 API(<strong>static factory method</strong>).
+<br/>
+
+- 클라이언트가 서비스의 인스턴스를 얻을 때 사용.
+- 클라이언트는 서비스 접근 API를 사용할 때 원하는 구현체의 조건을 명시할 수 있다. 조건을 명시하지 않으면 기본 구현체를 반환하거나 지원하는 구현체들을 하나씩 돌아가며 반환한다.
+
+~~~
+DriverManager.getConnection(); //Service Access API
+
+/**
+* getConnection()은 Connection이라는 서비스 인터페이스를 반환하는데, 제공자 
+* 등록 API 역할을 하는 DriverManager.registerDriver() 메소드로 등록한 제공자
+* (Driver)에 맞는 Connection 서비스를 반환한다. 즉 mySql Driver, Oracle 
+* Driver등 DB에 따라 다른 Connection을 제공한다는 뜻이다.
+* 
+*/
+~~~
+
+4. Provider Interface: Service Interface의 하위 객체를 생성해주는 API가 정의된 Interface
+
+- Service Provider 인터페이스가 없다면 리플렉션을 이용해서 각 구현체의 인스턴스를 생성한다.
+<strong>Service Provider Framework Pattern 구현 예시</strong>
+
+~~~
+// 1). Service Interface
+public interface Service {...}
+
+// 4). Provider Interface
+public interface Provider {
+    Service newService();
+}
+
+//팩토리 클래스, 객체생성 불가능 클래스
+public cass Services {
+    private static final Map<String, Provider> providersMap = new ConcurrentHashMap<String, Provider>();
+
+    // 객체 생성 방지
+    private Services() {}
+
+    // 2).Service Registration API
+    public static void registerProvider(String name, Provider provider) {
+        providersMap.put(name, provider);
+    }
+
+    // 3). Service Access API (정적 팩토리 메소드)
+    public static Service getMyService(String name) {
+        Provider provider = providersmap.get(name);
+
+        if (provider != null) {
+            return provider.newService();
+        } else {
+            throw new IllegalArgumentException("No provider");
+        }
+    }
+
+}
+
+~~~
+
+**DI Framework도 Service Provider로 볼 수 있다!**
+<br/>
+
+<h3>Disadvantages of static factory method</h3>
+
+---------------------------------------------
+
+<h4>public/protected 생성자가 없는 경우 서브클래스를 만들 수 없다.</h4>
+
+예를 들어 Collections Framework에 있는 클래스들의 서브 클래스를 만들 수 없다. 하지만 단점이 아닐 수도...? Inheritance보다 Composition을 사용하도록 강제하는 효과!
+
+<h4>프로그래머가 찾기 힘들다.</h4>
+
+- 생성자는 API docs 상단에 모아놔서 찾기 쉬운반면 팩토리 메소드는 다른 메소드와 구분없이 보여준다. 따라서 사용자가 정적 팩토리 메소드 방식 클래스를 사용할 때 인스턴스화할 방법을 알아서 찾아야한다.
+- 일반적으로 공통 명명 규칙을 준수함으로써 이 문제를 어느정도 해결할 수 있다.
+
+---------------------------------------------
+
+- <strong>from:</strong> 파라미터를 하나 받아서 해당 타입(static factory method를 포함하는 클래스)의 인스턴스를 생성해주는 타입 변환 메소드
+
+~~~
+Date d = Date.from(instant);
+~~~
+<br/>
+
+- <strong>of:</strong> 여러개의 파라미터를 받아 그들을 포함하는 인스턴스를 생성해주는 집계 메소드
+
+~~~
+Set<Rank> faceCards = EnumSet.of(JACK, QUEEN, KING);
+~~~
+<br/>
+
+- <strong>valueOf:</strong> from, of의 더 구체적인 버전
+
+~~~
+BigInteger prime = BigInteger.valueOf(Integer.MAX_VALUE);
+~~~
+<br/>
+
+- <strong>instance / getInstance:</strong> 매개변수를 받을 경우, 매개변수로 명시한 인스턴스를 반환(동일한 인스턴스를 보장하지는 않는다.)
+
+~~~
+StackWalker luke = StackWalker.getInstance(options);
+~~~
+<br/>
+
+- <strong>create / newInstance:</strong> instance / getInstance와 같으나, 항상 새로운 인스턴스를 생성해서 반환해주는 것을 보장한다.
+
+~~~
+Object newArray = Array.newInstance(classObject, arrayLen);
+~~~
+<br/>
+
+- <strong>getType:</strong> getInstance와 동일하지만, 팩토리 메소드가 다른 클래스에 있는 경우 사용된다. getType에서의 Type은 리턴되는 객체의 클래스를 의미한다.
+
+~~~
+FileStore fs = Files.getFileStore(path);
+~~~
+<br/>
+
+- <strong>newType:</strong> newInstance와 동일하지만, 팩토리 메소드가 다른 클래스에 있는 경우 사용된다. getType에서의 Type은 리턴되는 객체의 클래스를 의미한다.
+
+~~~
+BufferedReader br = Files.newBufferedReader(path);
+~~~
+<br/>
+
+- <strong>type:</strong> getType / newType의 간결한 버전
+
+~~~
+List<Complaint> litany = Collections.list(lagacyLitany);
+~~~
+<br/>
+
+<h3>정리</h3>
+static factory 메소드와 생성자는 모두 장단점이 있다. 하지만 대부분 static factory 메소드가 우위를 가지므로, 생성자를 만들기전에 static factory 메소드를 고려해보자.
