@@ -198,7 +198,7 @@ NutritionFacts cocaCola = new NutritionFacts.Builder(240, 8)
 **builder pattern의 무결성을 보장하기 위해선 build() 메소드로 생성자를 호출하는 시점에 파라미터를 검증해야한다. 만약 검증이 실패하면 IllegalArgumentException을 발생시키면 된다.(에러 메세지는 검증 실패한 파라미터에 대한 정보가 들어간다.)**
 <br/>
 
-- 빌더 패턴은 클래스 계층화에도 적절하게 사용할 수 있다. 추상 클래스는 추상 빌더를 가지며, 구체 클래스는 구체적인(Concrete) 빌더를 갖는다.
+- 빌더 패턴은 클래스 계층화에도 적절하게 사용할 수 있다. 추상 클래스는 추상 빌더를 가지며, 하위 클래스는 추상클래스를 상속받으며 하위 클래스용 빌더도(Concrete) 추상 빌더를 상속받는다.
 
 ~~~
 // Builder pattern for class hierarchies
@@ -226,7 +226,7 @@ public abstract class Pizza {
 }
 ~~~
 
-<strong>Pizza 클래스의 Builder는 재귀적 타입 파라미터을 갖는 제네릭 타입이며, 이는 self 메소드와 더불어서 서브 클래스에서 타입 캐스팅 없이 메소드 체이닝이 적절하게 동작할 수 있도록 도와준다.</strong>
+<strong>Pizza 클래스의 Builder는 재귀적 타입 파라미터을 갖는 제네릭 타입이며, 이는 self 메소드와 더불어서 서브 클래스에서 타입 캐스팅 없이 메소드 체이닝이 적절하게 동작할 수 있도록 도와준다.(자바 스크립트의 self 모방했다고 보면됨.)</strong>
 
 <br/>
 
