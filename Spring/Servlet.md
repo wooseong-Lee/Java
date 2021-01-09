@@ -124,7 +124,7 @@ protected static class DispatcherServletConfiguration {
 
 <h3>클리이언트 요청으로부터 DispatcherServlet의 전체 흐름</h3>
 
-Framework은 HttpServlet을 상속받고 있다. DispatcherServlet은 FrameworkServlet을 상속받고 있다. 즉 DispatcherServlet이 FrontController라는 것이다. **주의할 점은 서블릿 컨테이너처럼 요청이 왔을 때 객체를 생성하는게 아니라 이미 컨트롤러들이 빈으로 등록되어져 있다는 것을 생각해야한다.**
+FrameworkServlet은 HttpServlet을 상속받고 있다. DispatcherServlet은 FrameworkServlet을 상속받고 있다. 즉 DispatcherServlet이 FrontController라는 것이다. **주의할 점은 서블릿 컨테이너처럼 요청이 왔을 때 객체를 생성하는게 아니라 이미 컨트롤러들이 빈으로 등록되어져 있다는 것을 생각해야한다.**
 
 1. FrameworkServlet.service()를 먼저 탄다.
 2. FrameworkServlet.service()는 dispatch.doService()를 호출한다.
