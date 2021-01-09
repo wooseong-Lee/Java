@@ -20,14 +20,17 @@
 <h3>MVC model1</h3>
 
 ![MVC1](images/MVC1.png)
+
 View를 표현하는 HTML과 Model / Controller을 담당하는 코드가 JSP안에서 함께 작성되기 때문에 MVC의 각 컴포넌트의 분리를 통한 효과를 보기 힘들었다.
 
 ![MVC1-1](images/MVC1-1.png)
+
 따라서 JSP는 JavaBean을 사용하여 데이터베이스에 접근하는 모델을 만들어 분리했고 이를 MVC1이라고 한다.
 
 <h3>MVC model2</h3>
 
 ![MVC2](images/MVC2.png)
+
 모델2에선 각 컴포넌트가 혼재되는 JSP와 HTML 표현 방법이 불편한 Servlet을 함께 사용하여 View와 Controller를 분리했다.
 
 **실제로는 JSP도 Servlet으로 변환되서 실행된다.**
@@ -38,7 +41,7 @@ View를 표현하는 HTML과 Model / Controller을 담당하는 코드가 JSP안
 
 서블릿 컨테이너는 URL 패턴과 서블릿을 매핑하는 배포 서술자(Deployment Descriptor, web.xml)을 사용해서 요청에 맞는 서블릿을 찾아 요청에 대한 처리를 위한 스레드를 생성해준다. Servlet Container로 tomcat이 있다.
 
-1. 웹 서버로부터 요청이 들어오면 제일 먼저 컨테이너가 이를 전달바든ㄴ다.
+1. 웹 서버로부터 요청이 들어오면 제일 먼저 컨테이너가 이를 전달받는다.
 2. 컨테이너는 배포서술자(web.xml)을 참조해서 해당 서블릿을 찾는다.
 3. 서블릿이 존재하지 않으면 '메모리 로딩 -> 객체 생성 -> init()'과정이 발생한다.
 4. 서블릿이 존재하면 스레드 풀을 사용해서 서블릿을 위한 스레드를 생성한다.
