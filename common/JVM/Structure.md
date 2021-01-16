@@ -96,6 +96,8 @@ JVM이 프로그램을 수행하기 위해 OS로부터 별도로 할당받는 �
 
 <h3>Method Area에 올라가는 정보의 종류</h3>
 
+*Method area는 이론적으로 힙의 영역 중 일부이다.*
+
 1. Field Information: 멤버 변수의 이름, 데이터 타입, 접근 제어자에 대한 정보
 2. Method Information: 메소드의 이름, 리턴 타입, 매개변수 타입, 접근 제어자에 대한 정보
 3. Type Information: Type 속성이 Class인지, Interface인지 여부 저장
@@ -106,7 +108,38 @@ JVM이 프로그램을 수행하기 위해 OS로부터 별도로 할당받는 �
    - Type에서 사용된 상수를 저장하는 곳(중복이 있을 시 기존의 상수 사용)
    - 문자 상수, 타입, 필드, Method의 Symbolic reference(객체 이름으로 참조하는 것)도 상수 풀에 저장.
 5. Class variable: static 변수라고도 불림. 모든 객체가 공유할 수 있고, 객체 생성없이 접근 가능
-6. Class 사용 이전에 메모리 할당. final class 변수(static final)변수의 경우 상수로 치환되어 상수풀에 복사된다.
+6. JIT 컴파일러에 의해 컴파일된 코드도 여기에 저장된다.
+7. Class 사용 이전에 메모리 할당. final class 변수(static final)변수의 경우 상수로 치환되어 상수풀에 복사된다.
 
 <h2>Heap</h2>
 - 객체를 저장하는 가상 메모리 공간. 프로그램 상에서 런타임시 동적으로 할당하여 사용하는 영역.
+
+<h2>메모리 영역에 대해 헷갈리는 부분 정리</h2>
+
+<h3>1. Permanent generation(JDK8이전)과 method area의 관계</h3>
+
+JVM Spec은 Method area의 개념은 규정하고 있지만, 어떤식으로 구현해야할지는 규정하고 있지 않다. 따라서 JVM 구현마다 Method area 구현 방법은 다를 수 있다. 대부분 SUN사의 HotSpot JVM을 가장 많이 사용하고, HotSpot에서는 method area를 구현하기 위해 permanent generation을 사용했다. 즉 Permanent generation은 HotSpot JVM의 개념이고, Method Area는 JVM Spec의 규정(표준을 정한 것)이다. 즉 JDK 1.2~JDK 6까지 HotSpot은 Permanent한 Method area 를 제공했고 재사용 가능한(GC된 Method Area가 OS로 다시 반환되지 않는) GC 구현을 사용했다.
+
+<h3>2. Metaspace</h3>
+
+Java8에 들어서면서, HotSpot은 Permanent generation 영역을 버리고 Native memory 영역에 Metaspace를 만든다. 디폴트로 클래스 메타 데이터를 저장하기 위한 native memory 영역에 크기 제한은 없다. 그러면 Method area가 없는가? Method area는 스펙이므로 당연히 여전히 존재한다. 차이점은 뭔가? 
+<strong>
+
+1. 위치: Permanent generation은 heap 영역에 속하고, meta space 영역은 local memory 영역에 속한다.
+2. 정보: Permanent generation 영역에서는 static 변수/object, constant pool, class meta 정보등을 모두 저장했으나, meta space에서는 class meta 정보만 저장하고, constant pool, static variable은 heap 영역에 저장된다.
+
+</strong>
+
+<h3>3. Constant Pool(Class file)</h3>
+
+상수풀 테이블(Constant Pool Table)등의 컴파일된 바이트 코드 파일을 의미한다. 이는 컴파일 동안 생성된 심볼릭 참조나 리터럴을 저장하기 위한 용도이다. 클래스가 로딩된 이후에는 메소드 영역의 runtime constant pool에 저장된다.
+
+![ConstantPool](images/ConstantPool.png)
+
+<h3>4. Runtime Constant Pool</h3>
+
+클래스 로더에 의해 클래스가 로딩되면, 위의 constant pool이 Method area의 runtime constant pool에 저장된다. 즉 클래스가 로딩되는 시점에 constant pool을 기반으로 동적으로 생성된다. runtime constant pool은 런타임에 symbolic reference를 리졸빙한다. 즉, 필드와 메소드명 등을 인덱싱한다. 인덱싱되면, 타입 정보 및 필드와 메소드의 이름, 디스크립터를 알 수 있다. 결과적으로 이때부터 메소드 호출이 가능해지고, 필드에 접근할 수 있게된다.
+
+<h3>5. String constant pool</h3>
+
+JVM마다 단 하나 존재하며 Java 8 이후로 permanent generation이 없어지면서 local memory 영역에 위치하게 된다.
