@@ -42,6 +42,110 @@ public class Hello {
 }
 ~~~
 
+~~~
+javap -v -p -s Hello.class
+
+-v(verbose): 추가 정보까지 출력한다. 
+-p(private): 모든 클래스와 멤버를 출력한다.
+-c: 역 어셈블한 결과를 출력한다.
+-s: internal 타입 시그니처를 출력한다.
+~~~
+
+~~~
+Classfile /Users/kakao/Hello.class
+  Last modified 2021. 1. 17.; size 555 bytes
+  SHA-256 checksum ca023427859e122f2f4f0026dade4641187533f622693c20a43d90d098d83dd7
+  Compiled from "Hello.java"
+public class Hello
+  minor version: 0
+  major version: 58
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // Hello
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Hello
+   #8 = Utf8               Hello
+   #9 = Methodref          #7.#3          // Hello."<init>":()V
+  #10 = Fieldref           #11.#12        // java/lang/System.out:Ljava/io/PrintStream;
+  #11 = Class              #13            // java/lang/System
+  #12 = NameAndType        #14:#15        // out:Ljava/io/PrintStream;
+  #13 = Utf8               java/lang/System
+  #14 = Utf8               out
+  #15 = Utf8               Ljava/io/PrintStream;
+  #16 = Methodref          #7.#17         // Hello.helloMessage:()Ljava/lang/String;
+  #17 = NameAndType        #18:#19        // helloMessage:()Ljava/lang/String;
+  #18 = Utf8               helloMessage
+  #19 = Utf8               ()Ljava/lang/String;
+  #20 = Methodref          #21.#22        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #21 = Class              #23            // java/io/PrintStream
+  #22 = NameAndType        #24:#25        // println:(Ljava/lang/String;)V
+  #23 = Utf8               java/io/PrintStream
+  #24 = Utf8               println
+  #25 = Utf8               (Ljava/lang/String;)V
+  #26 = String             #27            // Hello, JVM!
+  #27 = Utf8               Hello, JVM!
+  #28 = Utf8               Code
+  #29 = Utf8               LineNumberTable
+  #30 = Utf8               main
+  #31 = Utf8               ([Ljava/lang/String;)V
+  #32 = Utf8               StackMapTable
+  #33 = Utf8               SourceFile
+  #34 = Utf8               Hello.java
+{
+  public Hello();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: new           #7                  // class Hello
+         3: dup
+         4: invokespecial #9                  // Method "<init>":()V
+         7: astore_1
+         8: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: aload_1
+        12: invokevirtual #16                 // Method helloMessage:()Ljava/lang/String;
+        15: invokevirtual #20                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        18: goto          18
+      LineNumberTable:
+        line 3: 0
+        line 4: 8
+        line 5: 18
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 18
+          locals = [ class Hello ]
+
+  public java.lang.String helloMessage();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #26                 // String Hello, JVM!
+         2: areturn
+      LineNumberTable:
+        line 9: 0
+}
+SourceFile: "Hello.java"
+~~~
+
 <h3>JVM 실행</h3>
 
 **java 명령어가 실행되면 JRE가 조성되면서 JVM이 실행된다. JVM이 실행되면 JVM 단위로 생성되는 힙과 메소드 영역이 함께 생성된다.**
@@ -56,13 +160,15 @@ public class Hello {
 
 **JVM 스펙은 런타임 데이터 영역을 6가지로 나눠서 설명하고 있고, 그에 따라 그림에서도 힙과 메소드 영역을 분리해서 표현했지만, 스펙에는 메소드 영역이 논리적으로 힙의 일부지만(따라서 가비지 컬렉션의 대상이 되지만), 메소드 영역의 위치에 대해 강제하지 않는다고 나와있으며, 메소드 영역의 위치는 JVM 구현체에 따라 달라질 수 있다.**
 
+참고로 Java 8부터 나오는 Metaspace이라는 용어는 JVM 구현체인 HotSpot JVM에서 나오는 용어이며, Metaspace에 저장되는 데이터를 기준으로 보면 HotSpot JVM은 JVM 스펙의 메소드 영역을 Metaspace로 구현한 거라고 볼 수 있다.
+
 <h3>시작 클래스 생성</h3>
 
 시작 클래스는 Hello를 지칭하며, 시작 클래스를 생성하는 것은 파일 시스템에 있는 Hello.class 파일을 JVM의 메소드 영역으로 읽어들이는 것을 의미한다. 따라서 이 시점에서 Hello의 바이트 코드 내용이 메소드 영역에 저장된다.
 
 <h4>런타임 상수 풀</h4>
 
-클래스가 생성되면 런타임 상수 풀도 함께 생성된다고 했다. <strong>런타임 상수 풀에는 컴파일 탕미에 이미 알 수 있는 리터럴 값부터 런타임에 해석되는 메소드와 필드의 참조까지를 포괄하는 여러 종류의 상수가 포함된다.</strong> 런타임 상수 풀은 다른 전통적인 언어에서 말하는 심볼 테이블과 비슷한 기능을 한다고 보면된다.
+클래스가 생성되면 런타임 상수 풀도 함께 생성된다고 했다. <strong>런타임 상수 풀에는 컴파일 타임에 이미 알 수 있는 리터럴 값부터 런타임에 해석되는 메소드와 필드의 참조까지를 포괄하는 여러 종류의 상수가 포함된다.</strong> 런타임 상수 풀은 다른 전통적인 언어에서 말하는 심볼 테이블과 비슷한 기능을 한다고 보면된다.
 
 ![RuntimeConstantPool](images/RuntimeConstantPool.png)
 
